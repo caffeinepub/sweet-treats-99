@@ -1,0 +1,85 @@
+type _CaffeineStorageRefillResult = 
+ record {
+   success: opt bool;
+   topped_up_amount: opt nat;
+ };
+type _CaffeineStorageRefillInformation = record {
+                                           proposed_top_up_amount: opt nat;};
+type _CaffeineStorageCreateCertificateResult = 
+ record {
+   blob_hash: text;
+   method: text;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type Product = 
+ record {
+   category: text;
+   description: text;
+   featured: bool;
+   id: nat;
+   imageUrl: text;
+   name: text;
+   price: float64;
+ };
+type Order = 
+ record {
+   cakeType: text;
+   createdAt: int;
+   customerEmail: text;
+   customerName: text;
+   customerPhone: text;
+   deliveryDate: text;
+   flavor: text;
+   id: nat;
+   owner: principal;
+   quantity: nat;
+   size: text;
+   specialNotes: text;
+   status: text;
+ };
+type BusinessSettings = 
+ record {
+   address: text;
+   businessName: text;
+   email: text;
+   location: text;
+   openingHours: text;
+   phone: text;
+   whatsappNumber: text;
+ };
+service : {
+  _caffeineStorageBlobIsLive: (hash: blob) -> (bool) query;
+  _caffeineStorageBlobsToDelete: () -> (vec blob) query;
+  _caffeineStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
+  _caffeineStorageCreateCertificate: (blobHash: text) ->
+   (_CaffeineStorageCreateCertificateResult);
+  _caffeineStorageRefillCashier: (refillInformation:
+   opt _CaffeineStorageRefillInformation) -> (_CaffeineStorageRefillResult);
+  _caffeineStorageUpdateGatewayPrincipals: () -> ();
+  _initializeAccessControlWithSecret: (userSecret: text) -> ();
+  addProduct: (name: text, description: text, price: float64, category: 
+   text, imageUrl: text, featured: bool) -> (nat);
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  deleteProduct: (id: nat) -> (bool);
+  getAllOrders: () -> (vec Order) query;
+  getCallerUserRole: () -> (UserRole) query;
+  getFeaturedProducts: () -> (vec Product) query;
+  getMyOrders: () -> (vec Order) query;
+  getProducts: () -> (vec Product) query;
+  getProductsByCategory: (category: text) -> (vec Product) query;
+  getSettings: () -> (BusinessSettings) query;
+  isCallerAdmin: () -> (bool) query;
+  placeOrder: (customerName: text, customerPhone: text, customerEmail: 
+   text, cakeType: text, size: text, flavor: text, quantity: nat,
+   deliveryDate: text, specialNotes: text) -> (nat);
+  updateOrderStatus: (id: nat, status: text) -> (bool);
+  updateProduct: (id: nat, name: text, description: text, price: float64,
+   category: text, imageUrl: text, featured: bool) -> (bool);
+  updateSettings: (businessName: text, location: text, address: text, phone:
+   text, whatsappNumber: text, email: text, openingHours: text) -> ();
+}
